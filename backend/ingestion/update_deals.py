@@ -9,22 +9,12 @@ class UpdateDeals:
         session = SessionLocal()
         deal_repository = DealRepository(session)
         deals = get_deals()
+        seen_games = set()
 
         for deal in deals:
-            game = deal_repository.insert_game(deal)
-            deal_repository.insert_pricing(game.id, deal)
-
-        deal_repository.commit()
-    
-    def test_update_game(self):
-        session = SessionLocal()
-        deal_repository = DealRepository(session)
-        deals = get_deals()
-
-        for deal in deals:
-            game = deal_repository.update_game(deal)
+            game = deal_repository.upsert_game(deal)
             deal_repository.insert_pricing_if_changed(game.id, deal)
+            seen_games.add(game.id)
 
+        deal_repository.update_game_sale_status(seen_games)
         deal_repository.commit()
-        print(session.query(Game).count())
-        print(session.query(Pricing).count())

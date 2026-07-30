@@ -26,7 +26,8 @@ class DealRepository:
             "steam_rating_percent": deal_data.steam_rating_percent,
             "steam_rating_text": deal_data.steam_rating_text,
             "steam_rating_count": deal_data.steam_rating_count,
-            "release_date": deal_data.release_date
+            "release_date": deal_data.release_date,
+            "is_on_sale": deal_data.is_on_sale
         }
         game = Game(**game_kwargs)
         self.session.add(game)
@@ -41,8 +42,7 @@ class DealRepository:
         pricing_kwargs = {
             "normal_price": deal_data.normal_price,
             "sale_price": deal_data.sale_price,
-            "savings": deal_data.savings,
-            "is_on_sale": deal_data.is_on_sale
+            "savings": deal_data.savings
         }
         pricing = Pricing(game_id=game_id, **pricing_kwargs)
         self.session.add(pricing)
@@ -73,23 +73,21 @@ class DealRepository:
         game.steam_rating_text = deal_data.steam_rating_text
         game.steam_rating_count = deal_data.steam_rating_count
         game.release_date = deal_data.release_date
+        game.is_on_sale = deal_data.is_on_sale
                    
         return game
 
     def insert_pricing_if_changed(self, game_id: int, deal_data: CheapSharkDeal) -> None:
         latest = self.get_latest_price(game_id)
 
-        print("Database:")
-        print(latest.sale_price, latest.normal_price, latest.is_on_sale)
-        print("API:")
-        print(deal_data.sale_price, deal_data.normal_price, deal_data.is_on_sale)
-
-        print(latest.sale_price == deal_data.sale_price)
-        print(latest.normal_price == deal_data.normal_price)
-        print(latest.is_on_sale == deal_data.is_on_sale)
-
-        print(type(latest.sale_price))
-        print(type(deal_data.sale_price))
-
-        if latest is None or latest.sale_price != deal_data.sale_price or latest.normal_price != deal_data.normal_price or latest.is_on_sale != deal_data.is_on_sale:
+        if latest is None or latest.sale_price != deal_data.sale_price or latest.normal_price != deal_data.normal_price:
             self.insert_pricing(game_id, deal_data)
+
+    def upsert_game(self, deal_data: CheapSharkDeal) -> Game:
+        game = self.get_game_by_steam_app_id(deal_data.steam_app_id)
+        if game is None:
+            return self.insert_game(deal_data)
+        return self.update_game(deal_data)
+
+    def update_game_sale_status(self, seen_games: set[int]) -> None:
+        self.session.query(Game).filter(Game.is_on_sale == True, ~Game.id.in_(seen_games)).update({Game.is_on_sale: False})
