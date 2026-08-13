@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from api.safe_request import safe_request
-from schemas.deals import CheapSharkDeal
+from schemas.cheapshark import CheapSharkDeal
 
 # rate limit Vars
 MAX_RETRIES = 5

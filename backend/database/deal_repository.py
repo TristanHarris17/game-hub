@@ -4,7 +4,7 @@ from datetime import datetime, UTC
 
 from database.models import Game, Pricing
 
-from schemas.deals import CheapSharkDeal
+from schemas.cheapshark import CheapSharkDeal
 
 class DealRepository:
     def __init__(self, session: SessionLocal):
@@ -50,16 +50,22 @@ class DealRepository:
         return pricing
 
     def get_game_by_steam_app_id(self, steam_app_id: int) -> Game:
-        """
-        Gets a game by its steam app id.
-        """
         return self.session.query(Game).filter(Game.steam_app_id == steam_app_id).first()
+
+    def get_game_by_id(self, game_id: int) -> Game:
+        return self.session.query(Game).filter(Game.id == game_id).first()
+    
+    def get_game_by_cheapshark_id(self, cheap_shark_id: int) -> Game:
+        return self.session.query(Game).filter(Game.cheap_shark_id == cheap_shark_id).first()
 
     def get_latest_price(self, game_id: int) -> Pricing:
         """
         Gets the latest pricing record for a game.
         """
         return self.session.query(Pricing).filter(Pricing.game_id == game_id).order_by(Pricing.timestamp.desc()).first()
+
+    def get_price_history(self, game_id: int) -> list[Pricing]:
+        return self.session.query(Pricing).filter(Pricing.game_id == game_id).order_by(Pricing.timestamp.asc()).all()
 
     def update_game(self, deal_data: CheapSharkDeal) -> Game:
         game = self.get_game_by_steam_app_id(deal_data.steam_app_id)
@@ -91,3 +97,21 @@ class DealRepository:
 
     def update_game_sale_status(self, seen_games: set[int]) -> None:
         self.session.query(Game).filter(Game.is_on_sale == True, ~Game.id.in_(seen_games)).update({Game.is_on_sale: False})
+
+    def get_games(self, limit: int = None, offset: int = 0) -> list[Game]:
+        """
+        Gets a list of games with optional limit and offset.
+        """
+        if limit is not None:
+            return self.session.query(Game).limit(limit).offset(offset).all()
+        return self.session.query(Game).all()
+
+    def get_games_on_sale(self, limit: int = None, offset: int = 0) -> list[Game]:
+        """
+        Gets a list of games on sale with optional limit and offset.
+        """
+        if limit is not None:
+            return self.session.query(Game).filter(Game.is_on_sale == True).limit(limit).offset(offset).all()
+        return self.session.query(Game).filter(Game.is_on_sale == True).all()
+
+    
