@@ -1,14 +1,29 @@
 from fastapi import FastAPI
 from fastapi import Depends
+from outapi import games, pricing
 from outapi.dependencies import get_db
 from database.deal_repository import DealRepository
 from schemas.game_response import GameResponse
 
 app = FastAPI(title="Steam Deals API")
 
+app.include_router(
+    games.router,
+    prefix="/api/v1/games",
+    tags=["games"]
+)
+
+app.include_router(
+    pricing.router,
+    prefix="/api/v1/pricing",
+    tags=["pricing"]
+)
+
 @app.get("/")
 def root():
     return {"message": "Welcome to the Steam Deals API!"}
+
+"""
 
 @app.get("/api/games", response_model=list[GameResponse])
 def get_games(
@@ -23,3 +38,4 @@ def get_deals(
 ):
     repository = DealRepository(db)
     return repository.get_games_on_sale()
+"""
