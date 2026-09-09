@@ -6,7 +6,7 @@ from schemas.pricing_response import PricingResponse
 
 router = APIRouter()
 
-@router.get("/pricing/{game_id}", response_model=PricingResponse)
+@router.get("/{game_id}", response_model=PricingResponse)
 def get_pricing(
     game_id: int,
     db: Session = Depends(get_db)
@@ -14,7 +14,7 @@ def get_pricing(
     repository = DealRepository(db)
     return repository.get_latest_price(game_id)
 
-@router.get("/pricing/{game_id}/history", response_model=list[PricingResponse])
+@router.get("/{game_id}/history", response_model=list[PricingResponse])
 def get_pricing_history(
     game_id: int,
     db: Session = Depends(get_db)

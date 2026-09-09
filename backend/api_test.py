@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends
 from outapi import games, pricing
 from outapi.dependencies import get_db
@@ -6,6 +7,14 @@ from database.deal_repository import DealRepository
 from schemas.game_response import GameResponse
 
 app = FastAPI(title="Steam Deals API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(
     games.router,
