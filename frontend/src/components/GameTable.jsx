@@ -18,21 +18,21 @@ function GameTable({ games }) {
                     {games.map((game) => (
                         <tr key={game.id}>
                             <td>
-                                {game.thumbnail && (
+                                <div className="game-cell">
+                                    {game.thumbnail && (
                                     <img
                                         className="game-table-thumbnail"
                                         src={game.thumbnail}
                                         alt={game.title}
                                     />
                                 )}
-                            </td>
-                            <td>
-                                <Link 
-                                className="game-link"
-                                to={`/game/${game.id}`}
-                                >
-                                {game.title}
-                                </Link>
+                                    <Link 
+                                        className="game-link"
+                                        to={`/game/${game.id}`}
+                                    >
+                                    {game.title}
+                                    </Link>
+                                </div>
                             </td>
 
                             <td>

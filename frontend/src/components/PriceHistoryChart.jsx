@@ -8,8 +8,8 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-function PriceHistoryChart({ pricehistory }) {
-    const chartData = pricehistory
+function PriceHistoryChart({ priceHistory }) {
+    const chartData = priceHistory
         .filter((price) => price.sale_price != null)
         .map((price) => ({
             date: new Date(price.timestamp).toLocaleDateString(),

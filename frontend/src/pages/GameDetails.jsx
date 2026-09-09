@@ -15,13 +15,14 @@ function GameDetails() {
     useEffect(() => {
         async function loadGame() {
             try {
-                const data = await getGame(gameId);
-                setGame(data);
+                const [gameData, priceData, priceHistoryData] = await Promise.all([
+                    getGame(gameId),
+                    getLatestPrice(gameId),
+                    getPriceHistory(gameId)
+                ]);
 
-                const priceData = await getLatestPrice(gameId);
+                setGame(gameData);
                 setPrice(priceData);
-
-                const priceHistoryData = await getPriceHistory(gameId);
                 setPriceHistory(priceHistoryData);
             } catch (error) {
                 setError(error.message);
@@ -107,10 +108,10 @@ function GameDetails() {
                 </section>
             )}
 
-            <section className="price-history-chart">
+            <section className="price-history-card">
                 <h2>Price History</h2>
                 {priceHistory.length > 0 ? (
-                    <PriceHistoryChart pricehistory={priceHistory} />
+                    <PriceHistoryChart priceHistory={priceHistory} />
                 ) : (
                     <p>No price history data is available.</p>
                 )}
