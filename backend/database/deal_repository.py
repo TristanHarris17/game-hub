@@ -7,7 +7,7 @@ from database.models import Game, Pricing
 from schemas.cheapshark import CheapSharkDeal
 
 class DealRepository:
-    def __init__(self, session: SessionLocal):
+    def __init__(self, session: Session):
         self.session = session
         
     def commit(self):

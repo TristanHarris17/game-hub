@@ -3,6 +3,7 @@ from outapi.dependencies import get_db
 from database.deal_repository import DealRepository
 from schemas.game_response import GameResponse
 from schemas.pricing_response import PricingResponse
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

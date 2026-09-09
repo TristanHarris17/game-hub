@@ -2,6 +2,7 @@ from fastapi import Depends, APIRouter
 from outapi.dependencies import get_db
 from database.deal_repository import DealRepository
 from schemas.game_response import GameResponse
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

@@ -1,4 +1,4 @@
-from database.database import SessionLocal
+from database.database import Session
 from database.deal_repository import DealRepository
 from database.models import Game, Pricing
 
@@ -6,7 +6,7 @@ from api.cheapshark_api import get_deals
 
 class UpdateDeals:
     def update_deals(self):
-        session = SessionLocal()
+        session = Session()
         deal_repository = DealRepository(session)
         deals = get_deals()
         seen_games = set()
